@@ -65,3 +65,13 @@ boolean ArduboyEeprom::write(unsigned int address, const uint8_t *buffer, size_t
   return true;
 }
 
+template<typename T>
+boolean ArduboyEeprom::read(unsigned int address, T &object) const {
+  return read(address, reinterpret_cast<uint8_t *>(&object), sizeof(T));
+}
+
+template<typename T>
+boolean ArduboyEeprom::write(unsigned int address, const T &object) {
+  return write(address, reinterpret_cast<const uint8_t *>(&object), sizeof(T));
+}
+

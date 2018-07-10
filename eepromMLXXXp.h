@@ -20,6 +20,10 @@ class ArduboyEeprom
     boolean write(unsigned int address, uint8_t data);
     boolean read(unsigned int address, uint8_t *buffer, size_t size) const;
     boolean write(unsigned int address, const uint8_t *buffer, size_t size);
+    template<typename T>
+    boolean read(unsigned int address, T &object) const;
+    template<typename T>
+    boolean write(unsigned int address, const T &object);
 
   private:
     unsigned int eeStart;
