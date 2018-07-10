@@ -1,4 +1,5 @@
 #include "eepromMLXXXp.h"
+#include <avr/eeprom.h>
 
 int ArduboyEeprom::begin(unsigned int start, uint16_t userID, uint8_t sketchID, unsigned int length) {
   eeStart = start + 3; // user data starts after user ID and sketch ID
@@ -13,21 +14,21 @@ int ArduboyEeprom::begin(unsigned int start, uint16_t userID, uint8_t sketchID, 
   }
 
   // verify IDs (which indicates previously allocated)
-  if ((EEPROM.read(start) == (userID >> 8)) &&
-      (EEPROM.read(start + 1) == (userID & 0xFF)) &&
-      (EEPROM.read(start + 2) == (sketchID))) {
+  if ((readRawData(start) == (userID >> 8)) &&
+      (readRawData(start + 1) == (userID & 0xFF)) &&
+      (readRawData(start + 2) == (sketchID))) {
     return 0;
   }
 
   // indicate area was allocated by setting user ID and sketch ID
-  EEPROM.update(start, userID >> 8);
-  EEPROM.update(start + 1, userID & 0xFF);
-  EEPROM.update(start + 2, sketchID);
+  writeRawData(start, userID >> 8);
+  writeRawData(start + 1, userID & 0xFF);
+  writeRawData(start + 2, sketchID);
   return EEPROM_ALLOCATED;
 }
 
 uint8_t ArduboyEeprom::read(unsigned int address) const {
-  return EEPROM.read(eeStart + address);
+  return readRawData(eeStart + address);
 }
 
 boolean ArduboyEeprom::write(unsigned int address, uint8_t data) {
@@ -35,7 +36,7 @@ boolean ArduboyEeprom::write(unsigned int address, uint8_t data) {
     return false;
   }
 
-  EEPROM.update(eeStart + address, data);
+  writeRawData(eeStart + address, data);
   return true;
 }
 
@@ -47,7 +48,7 @@ boolean ArduboyEeprom::read(unsigned int address, uint8_t *buffer, size_t size) 
 
   end += eeStart;
   for (unsigned int i = eeStart + address; i < end; i++) {
-    *buffer++ = EEPROM.read(i);
+    *buffer++ = readRawData(i);
   }
   return true;
 }
@@ -60,7 +61,7 @@ boolean ArduboyEeprom::write(unsigned int address, const uint8_t *buffer, size_t
 
   end += eeStart;
   for (unsigned int i = eeStart + address; i < end; i++) {
-    EEPROM.update(i, *buffer++);
+    writeRawData(i, *buffer++);
   }
   return true;
 }
@@ -75,3 +76,13 @@ boolean ArduboyEeprom::write(unsigned int address, const T &object) {
   return write(address, reinterpret_cast<const uint8_t *>(&object), sizeof(T));
 }
 
+uint8_t ArduboyEeprom::readRawData(unsigned int address) {
+  return eeprom_read_byte(reinterpret_cast<const uint8_t *>(eeStart + address));
+}
+
+uint8_t ArduboyEeprom::writeRawData(unsigned int address, uint8_t data) {
+  uint8_t * addressPointer = reinterpret_cast<uint8_t *>(eeStart + address);
+  if(eeprom_read_byte(addressPointer) != data) {
+    eeprom_write_byte(addressPointer);
+  }
+}
