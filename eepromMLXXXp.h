@@ -16,10 +16,10 @@ class ArduboyEeprom
   public:
     int begin(unsigned int start, uint16_t userID, uint8_t sketchID, unsigned int length);
 
-    uint8_t read(unsigned int address);
+    uint8_t read(unsigned int address) const;
     boolean write(unsigned int address, uint8_t data);
-    boolean read(unsigned int address, uint8_t *buffer, size_t size);
-    boolean write(unsigned int address, uint8_t *buffer, size_t size);
+    boolean read(unsigned int address, uint8_t *buffer, size_t size) const;
+    boolean write(unsigned int address, const uint8_t *buffer, size_t size);
 
   private:
     unsigned int eeStart;

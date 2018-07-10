@@ -26,7 +26,7 @@ int ArduboyEeprom::begin(unsigned int start, uint16_t userID, uint8_t sketchID, 
   return EEPROM_ALLOCATED;
 }
 
-uint8_t ArduboyEeprom::read(unsigned int address) {
+uint8_t ArduboyEeprom::read(unsigned int address) const {
   return EEPROM.read(eeStart + address);
 }
 
@@ -39,7 +39,7 @@ boolean ArduboyEeprom::write(unsigned int address, uint8_t data) {
   return true;
 }
 
-boolean ArduboyEeprom::read(unsigned int address, uint8_t *buffer, size_t size) {
+boolean ArduboyEeprom::read(unsigned int address, uint8_t *buffer, size_t size) const {
   unsigned int end = address + size;
   if (end > eeLength) {
     return false;
@@ -52,7 +52,7 @@ boolean ArduboyEeprom::read(unsigned int address, uint8_t *buffer, size_t size) 
   return true;
 }
 
-boolean ArduboyEeprom::write(unsigned int address, uint8_t *buffer, size_t size) {
+boolean ArduboyEeprom::write(unsigned int address, const uint8_t *buffer, size_t size) {
   unsigned int end = address + size;
   if (end > eeLength) {
     return false;
